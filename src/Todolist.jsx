@@ -12,7 +12,6 @@ function TodoList() {
         if (task.trim() === "") {
             return;
         }
-
         const newTodo = {
             id: Date.now(),
             task: task,

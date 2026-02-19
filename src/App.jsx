@@ -11,6 +11,10 @@ import { UserLists } from './modules/users/UserLists'
 import Home from './Home'
 import News from './News'
 import ButtonDemo from './components/ButtonDemo'
+import UserData from './userData'
+import BlogPage from './BlogPage'
+import Data from './data'
+
 
 function App() {
     // let count = 0
@@ -44,6 +48,10 @@ function App() {
                     <Route path='products/:id' element={<DetailPage />} />
                     <Route path='todolist' element={<TodoList />} />
                     <Route path='buttons' element={<ButtonDemo />} />
+                    <Route path='userData' element={<UserData />} />
+                    <Route path='BlogPage' element={<BlogPage />} />
+                    <Route path='data' element={<Data />} />
+
                     <Route path="/*" element={<div className="min-h-[60vh] flex items-center justify-center"><h1 className="text-4xl font-bold text-slate-800">Page not found</h1></div>} />
                 </Routes>
             </main>

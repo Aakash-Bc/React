@@ -19,6 +19,9 @@ function Navbar() {
                     <Link to="news" className="text-slate-600 hover:text-blue-600 font-medium transition-colors">News</Link>
                     <Link to="users" className="text-slate-600 hover:text-blue-600 font-medium transition-colors">Users</Link>
                     <Link to="todolist" className="text-slate-600 hover:text-blue-600 font-medium transition-colors">TodoList</Link>
+                    <Link to="userData" className="text-slate-600 hover:text-blue-600 font-medium transition-colors">UserData</Link>
+                    <Link to="BlogPage" className="text-slate-600 hover:text-blue-600 font-medium transition-colors">Blog</Link>
+                    <Link to="data" className="text-slate-600 hover:text-blue-600 font-medium transition-colors">Data</Link>
                 </div>
                 <div className="flex gap-4">
                     <Link to="/login" className="text-slate-600 hover:text-blue-600 font-medium transition-colors">Login</Link>

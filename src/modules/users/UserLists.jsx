@@ -6,17 +6,16 @@ export const UserLists = () => {
     const [query, setQuery] = useState("")
 
     const fetchUsers = async () => {
-        setLoading(true)
+    
         try {
             const response = await fetch(`https://randomuser.me/api/?results=12&seed=abc`)
             const data = await response.json()
             setUsers(data.results)
         } catch (error) {
             console.error("Error fetching users:", error)
-        } finally {
-            setLoading(false)
-        }
+        } 
     }
+    
 
     useEffect(() => {
         fetchUsers()

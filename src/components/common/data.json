@@ -1,0 +1,29 @@
+[
+  { "id": 1, "name": "Aakash", "age": 21, "address":"kathmandu" },
+  { "id": 2, "name": "Sandhya", "age": 22, "address":"Kohalpur" },
+  {
+    "id": 3,
+    "name": "Satyarth",
+    "age": 23,
+    "address":"Salyan"
+  },
+    {
+        "id": 4,
+        "name": "Anu",
+        "age": 24,
+        "address":"Npj"
+    },
+    {
+        "id": 5,
+        "name": "Sima",
+        "age": 25,
+        "address":"ktm"
+    },
+    {
+      "id": 6,
+        "name": "Laxmi",
+        "age": 25,
+        "address":"Dang",
+        "description":"I am from Dang"
+    }
+]

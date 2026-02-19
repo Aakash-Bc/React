@@ -10,7 +10,6 @@ const News = () => {
     const [loading, setLoading] = useState(true)
     const [query, setQuery] = useState(category || "technology")
     const [selectedCategory, setSelectedCategory] = useState(category || "technology")
-
     const categories = ["technology", "sports", "business", "entertainment"]
 
     const fetchNews = async (searchQuery = query) => {
