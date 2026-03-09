@@ -14,6 +14,7 @@ import ButtonDemo from './components/ButtonDemo'
 import UserData from './userData'
 import BlogPage from './BlogPage'
 import Data from './data'
+import Backend from './backend'
 
 
 function App() {
@@ -51,6 +52,7 @@ function App() {
                     <Route path='userData' element={<UserData />} />
                     <Route path='BlogPage' element={<BlogPage />} />
                     <Route path='data' element={<Data />} />
+                    <Route path='backend' element={<Backend />} />
 
                     <Route path="/*" element={<div className="min-h-[60vh] flex items-center justify-center"><h1 className="text-4xl font-bold text-slate-800">Page not found</h1></div>} />
                 </Routes>

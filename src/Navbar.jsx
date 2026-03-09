@@ -22,6 +22,7 @@ function Navbar() {
                     <Link to="userData" className="text-slate-600 hover:text-blue-600 font-medium transition-colors">UserData</Link>
                     <Link to="BlogPage" className="text-slate-600 hover:text-blue-600 font-medium transition-colors">Blog</Link>
                     <Link to="data" className="text-slate-600 hover:text-blue-600 font-medium transition-colors">Data</Link>
+                    <Link to="/backend" className="text-slate-600 hover:text-blue-600 font-medium transition-colors">Backend</Link>
                 </div>
                 <div className="flex gap-4">
                     <Link to="/login" className="text-slate-600 hover:text-blue-600 font-medium transition-colors">Login</Link>
