@@ -1,149 +1,220 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
 function Backend() {
-    const [isLoading, setIsLoading] = useState(false);
-    const [formData, setFormData] = useState({
-        title: "",
-        description: "",
-        status: true
+  const [isLoading, setIsLoading] = useState(false);
+  const [blogs, setBlogs] = useState([]);
+  const [editingId, setEditingId] = useState(null);
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    status: true
+  });
+
+  // GET BLOGS
+  useEffect(() => {
+    fetchBlogs();
+  }, []);
+
+  const fetchBlogs = async () => {
+    try {
+      const res = await axios.get("http://localhost:8000/api/category/blogs");
+      setBlogs(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: name === "status" ? value === "true" : value
     });
+  };
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: name === "status" ? value === "true" : value
-        });
-    };
+  // CREATE OR UPDATE BLOG
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setIsLoading(true);
+    try {
+      if (editingId) {
+        // Update existing blog
+        await axios.put(
+          `http://localhost:8000/api/category/update/${editingId}`,
+          formData
+        );
+        alert("✏️ Blog updated successfully!");
+        setEditingId(null);
+      } else {
+        // Create new blog
+        await axios.post(
+          "http://localhost:8000/api/category/create",
+          formData
+        );
+        alert("✨ Blog added successfully!");
+      }
 
-        try {
-            await axios.post("http://localhost:8000/blog/create", formData);
-            alert("✨ Blog added successfully!");
-            setFormData({ title: "", description: "", status: true });
-        } catch (error) {
-            console.error(error);
-            alert("❌ Failed to add blog. Please check your backend connection.");
-        } finally {
-            setIsLoading(false);
-        }
-    };
+      setFormData({ title: "", description: "", status: true });
+      fetchBlogs(); // refresh list
+    } catch (error) {
+      console.error(error);
+      alert("❌ Operation failed.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    return (
-        <div className="max-w-7xl mx-auto px-6 py-16 space-y-12 flex flex-col items-center min-h-[80vh]">
-            {/* Header Section */}
-            <div className="space-y-4 text-center w-full max-w-2xl">
-                <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">
-                    Backend <span className="text-black">Management</span>
-                </h1>
-                <p className="text-slate-500 text-lg">
-                    Manage your content directly with the internal API. Simple, powerful, and efficient.
-                </p>
-            </div>
+  // DELETE BLOG
+  const deleteBlog = async (id) => {
+    if (!window.confirm("Delete this blog?")) return;
+    try {
+      await axios.delete(`http://localhost:8000/api/category/delete/${id}`);
+      fetchBlogs();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-            {/* Form Card */}
-            <div className="w-full max-w-lg bg-white p-10 rounded-3xl border border-slate-200 shadow-2xl relative overflow-hidden group">
-                {/* Decorative background element */}
-                <div className="absolute top-0 right-0 -tr-y-1/2 tr-x-1/2 w-32 h-32 bg-slate-50 rounded-full blur-3xl group-hover:bg-slate-100 transition-colors"></div>
-                
-                <div className="relative z-10">
-                    <div className="mb-8 text-center">
-                        <h2 className="text-2xl font-black text-black uppercase tracking-widest flex items-center justify-center gap-2">
-                            <span className="w-8 h-[2px] bg-black"></span>
-                            Create Post
-                            <span className="w-8 h-[2px] bg-black"></span>
-                        </h2>
-                    </div>
+  // EDIT BLOG
+  const editBlog = (blog) => {
+    setEditingId(blog._id);
+    setFormData({
+      title: blog.title,
+      description: blog.description,
+      status: blog.status
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" }); // scroll to top when editing
+  };
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold text-black uppercase tracking-widest px-1">Post Title</label>
-                            <input
-                                type="text"
-                                name="title"
-                                placeholder="Enter a catchy title..."
-                                className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-black/5 focus:border-black outline-none transition-all placeholder:text-slate-400 text-black font-medium"
-                                value={formData.title}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
+  // CANCEL EDIT
+  const cancelEdit = () => {
+    setEditingId(null);
+    setFormData({ title: "", description: "", status: true });
+  };
 
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold text-black uppercase tracking-widest px-1">Description</label>
-                            <textarea
-                                name="description"
-                                placeholder="What's on your mind?"
-                                rows="4"
-                                className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-black/5 focus:border-black outline-none transition-all placeholder:text-slate-400 text-black font-medium resize-none shadow-sm"
-                                value={formData.description}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
+  return (
+    <div className="max-w-7xl mx-auto px-6 py-16 space-y-12 flex flex-col items-center min-h-[80vh]">
 
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold text-black uppercase tracking-widest px-1">Publishing Status</label>
-                            <div className="relative">
-                                <select 
-                                    name="status" 
-                                    onChange={handleChange}
-                                    value={formData.status.toString()}
-                                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-black/5 focus:border-black outline-none transition-all text-black font-medium appearance-none cursor-pointer"
-                                >
-                                    <option value="true">🟢 Active (true)</option>
-                                    <option value="false">🔴 Inactive (false)</option>
-                                </select>
-                                <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-black">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
+      {/* Header */}
+      <div className="space-y-4 text-center w-full max-w-2xl">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">
+          Backend <span className="text-black">Management</span>
+        </h1>
+        <p className="text-slate-500 text-lg">
+          Manage your content directly with the internal API.
+        </p>
+      </div>
 
-                        <button 
-                            type="submit"
-                            disabled={isLoading}
-                            className={`w-full py-4 rounded-2xl font-black text-white text-sm uppercase tracking-[0.2em] shadow-xl transition-all flex items-center justify-center gap-2 ${
-                                isLoading 
-                                ? 'bg-slate-400 cursor-not-allowed' 
-                                : 'bg-black hover:bg-slate-800 shadow-slate-900/20 active:scale-[0.98]'
-                            }`}
-                        >
-                            {isLoading ? (
-                                <>
-                                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    Processing...
-                                </>
-                            ) : (
-                                "Submit Blog"
-                            )}
-                        </button>
-                    </form>
-                </div>
-            </div>
+      {/* Form */}
+      <div className="w-full max-w-lg bg-white p-10 rounded-3xl border border-slate-200 shadow-2xl">
+        <h2 className="text-2xl font-black text-center mb-6">
+          {editingId ? "Update Post" : "Create Post"}
+        </h2>
 
-            {/* Hint Footer */}
-            <div className="flex items-center gap-4 text-slate-400 text-sm">
-                <span className="flex items-center gap-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                    </svg>
-                    Secure Endpoint
+        <form onSubmit={handleSubmit} className="space-y-6">
+
+          <input
+            type="text"
+            name="title"
+            placeholder="Enter title"
+            className="w-full px-5 py-3 border rounded-xl"
+            value={formData.title}
+            onChange={handleChange}
+            required
+          />
+
+          <textarea
+            name="description"
+            placeholder="Enter description"
+            className="w-full px-5 py-3 border rounded-xl"
+            rows="4"
+            value={formData.description}
+            onChange={handleChange}
+            required
+          />
+
+          <select
+            name="status"
+            value={formData.status.toString()}
+            onChange={handleChange}
+            className="w-full px-5 py-3 border rounded-xl"
+          >
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
+          </select>
+
+          <button
+            type="submit"
+            className="w-full bg-black text-white py-3 rounded-xl"
+            disabled={isLoading}
+          >
+            {isLoading
+              ? "Processing..."
+              : editingId
+              ? "Update Blog"
+              : "Submit Blog"}
+          </button>
+
+          {editingId && (
+            <button
+              type="button"
+              onClick={cancelEdit}
+              className="w-full py-2 mt-2 bg-gray-400 text-white rounded-xl"
+            >
+              Cancel Edit
+            </button>
+          )}
+
+        </form>
+      </div>
+
+      {/* Blog List */}
+      <div className="w-full max-w-5xl">
+        <h2 className="text-3xl font-bold text-center mb-8">Published Blogs</h2>
+        <div className="grid md:grid-cols-2 gap-6">
+          {blogs.map((blog) => (
+            <div
+              key={blog._id}
+              className="bg-white p-6 rounded-2xl border shadow-lg"
+            >
+              <h3 className="text-xl font-bold">{blog.title}</h3>
+              <p className="text-gray-600 mt-2">{blog.description}</p>
+
+              <div className="flex justify-between items-center mt-4">
+                <span
+                  className={`px-3 py-1 text-xs font-bold rounded-full ${
+                    blog.status
+                      ? "bg-green-100 text-green-700"
+                      : "bg-red-100 text-red-700"
+                  }`}
+                >
+                  {blog.status ? "Active" : "Inactive"}
                 </span>
-                <span className="w-1 h-1 bg-slate-300 rounded-full"></span>
-                <span>API v1.0.4</span>
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => editBlog(blog)}
+                    className="px-3 py-1 bg-blue-500 text-white rounded"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => deleteBlog(blog._id)}
+                    className="px-3 py-1 bg-red-500 text-white rounded"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
             </div>
+          ))}
         </div>
-    );
+      </div>
+
+    </div>
+  );
 }
 
-export default Backend;
+export default Backend;
