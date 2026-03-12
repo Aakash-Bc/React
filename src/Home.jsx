@@ -1,4 +1,6 @@
 import React from 'react';
+import { Button } from '@mantine/core';
+import { Carousel } from '@mantine/carousel';
 
 const Home = () => {
     return (
@@ -11,6 +13,14 @@ const Home = () => {
                     Experience simplicity and elegance in every click.
                 </p>
             </div>
+            <Button variant="filled" color="orange">Button</Button>
+            <Carousel withIndicators height={200} width={100}>
+                <Carousel.Slide>Hello i am from the firsts slide</Carousel.Slide>
+                <Carousel.Slide>Hello i am from the second slide</Carousel.Slide>
+                <Carousel.Slide>Hello i am from the third slide</Carousel.Slide>
+                {/* ...other slides */}
+            </Carousel>
+
         </div>
     );
 };
