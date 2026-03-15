@@ -17,6 +17,7 @@ import Data from './data'
 import Backend from './backend'
 import AdminPanel from './AdminPanel'
 import BlogDetailPage from './BlogDetailPage'
+import Contact from './contact'
 
 
 function App() {
@@ -57,6 +58,7 @@ function App() {
                     <Route path='backend' element={<Backend />} />
                     <Route path='admin' element={<AdminPanel />} />
                     <Route path='blog/:id' element={<BlogDetailPage />} />
+                    <Route path='contact' element={<Contact />} />
 
                     <Route path="/*" element={<div className="min-h-[60vh] flex items-center justify-center"><h1 className="text-4xl font-bold text-slate-800">Page not found</h1></div>} />
                 </Routes>

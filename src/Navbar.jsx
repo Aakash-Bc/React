@@ -26,6 +26,7 @@ function Navbar() {
                     <Link to="data" className="text-slate-600 hover:text-blue-600 font-bold text-sm transition-colors">Data</Link>
                     <Link to="/backend" className="text-slate-600 hover:text-blue-600 font-bold text-sm transition-colors">Backend Blog</Link>
                     <Link to="/admin" className="text-slate-600 hover:text-blue-600 font-bold text-sm transition-colors">Admin</Link>
+                    <Link to="contact" className="text-slate-600 hover:text-blue-600 font-bold text-sm transition-colors">Contact</Link>
                 </div>
                 <div className="flex gap-4">
                     {/* Login/Signup removed per user request */}
