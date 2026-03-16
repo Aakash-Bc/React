@@ -20,8 +20,8 @@ function Contact() {
     });
 
     return (
-        <Container size={420} my={60}>
-            <Title ta="center" className="text-3xl font-extrabold text-slate-800 tracking-tight">
+        <Container size={420} my={60} className="font-sans">
+            <Title ta="center" className="text-3xl font-black text-slate-800 tracking-tight uppercase bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
                 Contact Us
             </Title>
             <Text c="dimmed" size="sm" ta="center" mt={5} mb={30}>
@@ -72,24 +72,27 @@ function Contact() {
                         key={form.key('category')}
                         {...form.getInputProps('category')}
                     />
-                    <Button
-                        type="submit"
-                        fullWidth
-                        mt="xl"
-                        size="md"
-                        radius="md"
-                        className="bg-blue-600 hover:bg-blue-700 text-white font-bold transition-colors shadow-md"
-                    >
-                        Send Message
-                    </Button>
-                    <ActionIcon
-                        variant="gradient"
-                        size="xl"
-                        aria-label="Gradient action icon"
-                        gradient={{ from: 'blue', to: 'cyan', deg: 90 }}
-                    >
-                        <IconHeart />
-                    </ActionIcon>
+                    <div className="flex items-center gap-4 mt-8">
+                        <Button
+                            type="submit"
+                            fullWidth
+                            size="md"
+                            radius="md"
+                            className="bg-blue-600 hover:bg-blue-700 text-white font-bold transition-colors shadow-md flex-1"
+                        >
+                            Send Message
+                        </Button>
+                        <ActionIcon
+                            variant="gradient"
+                            size="xl"
+                            radius="md"
+                            aria-label="Gradient action icon"
+                            gradient={{ from: 'blue', to: 'indigo', deg: 90 }}
+                            className="shadow-md h-[42px] w-[42px]"
+                        >
+                            <IconHeart size={20} />
+                        </ActionIcon>
+                    </div>
                 </form>
             </Paper>
         </Container>

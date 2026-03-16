@@ -28,6 +28,7 @@ const AdminPanel = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [activeTab, setActiveTab] = useState("manage");
     const [editingId, setEditingId] = useState(null);
+    const [error, setError] = useState(null);
 
     // Mantine Form for Validation
     const form = useForm({
@@ -49,11 +50,14 @@ const AdminPanel = () => {
 
     const fetchBlogs = async () => {
         setIsLoading(true);
+        setError(null);
         try {
-            const res = await axios.get("http://localhost:8000/api/blogs");
-            setBlogs(res.data);
+            const res = await axios.get("http://localhost:5000/api");
+            setBlogs(Array.isArray(res.data) ? res.data : []);
         } catch (error) {
             console.error("Error fetching blogs:", error);
+            setError("Cannot connect to backend server. Make sure your server is running!");
+            setBlogs([]);
         } finally {
             setIsLoading(false);
         }
@@ -63,12 +67,12 @@ const AdminPanel = () => {
         setIsLoading(true);
         try {
             if (editingId) {
-                await axios.put(`http://localhost:8000/api/update/${editingId}`, values);
+                await axios.put(`http://localhost:5000/api/update/${editingId}`, values);
                 alert("✏️ Blog updated successfully!");
                 setEditingId(null);
                 setActiveTab("manage");
             } else {
-                await axios.post("http://localhost:8000/api/create", values);
+                await axios.post("http://localhost:5000/api/create", values);
                 alert("✨ Blog added successfully!");
             }
             form.reset();
@@ -84,7 +88,7 @@ const AdminPanel = () => {
     const deleteBlog = async (id) => {
         if (!window.confirm("Are you sure you want to delete this blog?")) return;
         try {
-            await axios.delete(`http://localhost:8000/api/delete/${id}`);
+            await axios.delete(`http://localhost:5000/api/delete/${id}`);
             fetchBlogs();
         } catch (error) {
             console.error("Error deleting blog:", error);
@@ -174,7 +178,7 @@ const AdminPanel = () => {
                                     </Table.Tr>
                                 </Table.Thead>
                                 <Table.Tbody>
-                                    {blogs.map((blog) => (
+                                    {Array.isArray(blogs) && blogs.map((blog) => (
                                         <Table.Tr key={blog._id} className="hover:bg-slate-50/50 transition-colors">
                                             <Table.Td>
                                                 <Group gap="sm">
@@ -225,10 +229,17 @@ const AdminPanel = () => {
                                             </Table.Td>
                                         </Table.Tr>
                                     ))}
-                                    {blogs.length === 0 && !isLoading && (
+                                    {(!Array.isArray(blogs) || blogs.length === 0) && !isLoading && (
                                         <Table.Tr>
                                             <Table.Td colSpan={3} py={60} ta="center">
-                                                <Text c="dimmed" fs="italic">No blogs found. Start by adding one!</Text>
+                                                {error ? (
+                                                    <div className="flex flex-col items-center">
+                                                        <Text c="red" fw={700} mb={6}>⚠️ Connection Error</Text>
+                                                        <Text c="dimmed" fs="italic">{error}</Text>
+                                                    </div>
+                                                ) : (
+                                                    <Text c="dimmed" fs="italic">No blogs found. Start by adding one!</Text>
+                                                )}
                                             </Table.Td>
                                         </Table.Tr>
                                     )}
