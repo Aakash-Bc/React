@@ -10,10 +10,10 @@ export const Hello = () => {
     ])
 
     return (
-        <div className="max-w-7xl mx-auto px-6 py-16 space-y-12">
+        <div className="max-w-7xl mx-auto px-6 py-20 space-y-12">
             <div className="text-center space-y-4">
                 <h1 className="text-4xl font-black text-slate-900">Meet Our <span className="text-blue-600">Expert Team</span></h1>
-                <p className="text-slate-500 max-w-2xl mx-auto font-medium">Coming together is a beginning. Keeping together is progress. Working together is success.</p>
+                <p className="text-slate-500 max-w-2xl mx-auto font-medium text-lg md:text-xl">Coming together is a beginning. Keeping together is progress. Working together is success.</p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">

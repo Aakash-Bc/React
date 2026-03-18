@@ -42,7 +42,7 @@ export const ProductLists = () => {
           <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">
             Our <span className="text-blue-600">Products</span>
           </h1>
-          <p className="text-slate-500 max-w-md">
+          <p className="text-slate-500 max-w-md text-lg">
             Explore our curated collection of high-quality electronics and lifestyle products.
           </p>
         </div>

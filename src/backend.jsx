@@ -1,6 +1,21 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import {
+  TextInput,
+  Textarea,
+  Switch,
+  Button,
+  Group,
+  Box,
+  Paper,
+  Title,
+  Stack,
+  LoadingOverlay,
+  Divider,
+  Container
+} from "@mantine/core";
+import { useForm } from "@mantine/form";
 
 function Backend() {
   const [blogs, setBlogs] = useState([]);
@@ -8,6 +23,39 @@ function Backend() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // View state for Add Blog Form
+  const [isAdding, setIsAdding] = useState(false);
+  const [formIsLoading, setFormIsLoading] = useState(false);
+
+  // Mantine Form for Validation
+  const form = useForm({
+      initialValues: {
+          title: "",
+          description: "",
+          status: true,
+      },
+      validate: {
+          title: (value) => (value.length < 5 ? "Title must have at least 5 characters" : null),
+          description: (value) => (value.length < 10 ? "Description must have at least 10 characters" : null),
+      },
+  });
+
+  const handleFormSubmit = async (values) => {
+      setFormIsLoading(true);
+      try {
+          await axios.post("http://localhost:5000/api/create", values);
+          alert("✨ Blog added successfully!");
+          form.reset();
+          setIsAdding(false);
+          fetchBlogs();
+      } catch (error) {
+          console.error(error);
+          alert("❌ Operation failed.");
+      } finally {
+          setFormIsLoading(false);
+      }
+  };
 
   // GET BLOGS
   useEffect(() => {
@@ -33,18 +81,86 @@ function Backend() {
     <div className="max-w-7xl mx-auto px-6 py-16 space-y-12 flex flex-col items-center min-h-[80vh]">
 
       {/* Header */}
-      <div className="space-y-4 text-center w-full max-w-2xl mb-12">
+      <div className="space-y-4 text-center w-full max-w-2xl mb-12 relative">
         <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">
           Backend <span className="text-blue-600">Blogs</span>
         </h1>
         <p className="text-slate-500 text-lg">
           Explore the latest stories and updates from our internal team.
         </p>
+        {!isAdding && (
+            <Button mt="md" size="md" radius="xl" color="blue" variant="light" onClick={() => setIsAdding(true)}>
+                + Add New Blog
+            </Button>
+        )}
       </div>
 
       {/* Blog List - Grid View ONLY */}
       <div className="w-full max-w-6xl">
-        {isLoading ? (
+        {isAdding ? (
+            <Container size="sm" p={0} className="w-full">
+                <Paper shadow="2xl" radius="3xl" withBorder p={40}>
+                    <Box pos="relative">
+                        <LoadingOverlay visible={formIsLoading} zIndex={1000} overlayProps={{ blur: 1 }} />
+
+                        <Group justify="space-between" mb={30}>
+                            <Title order={2} className="text-slate-800">
+                                New Post
+                            </Title>
+                            <Button variant="subtle" color="gray" size="xs" onClick={() => setIsAdding(false)}>
+                                Cancel
+                            </Button>
+                        </Group>
+
+                        <form onSubmit={form.onSubmit(handleFormSubmit)}>
+                            <Stack gap="xl">
+                                <TextInput
+                                    label="Post Title"
+                                    placeholder="Enter a catchy headline"
+                                    size="md"
+                                    radius="md"
+                                    withAsterisk
+                                    {...form.getInputProps("title")}
+                                    classNames={{ input: "bg-slate-50 border-slate-100" }}
+                                />
+
+                                <Textarea
+                                    label="Description"
+                                    placeholder="Tell your story..."
+                                    size="md"
+                                    radius="md"
+                                    minRows={6}
+                                    withAsterisk
+                                    {...form.getInputProps("description")}
+                                    classNames={{ input: "bg-slate-50 border-slate-100" }}
+                                />
+
+                                <Divider label="Publishing Options" labelPosition="center" />
+
+                                <Switch
+                                    label="Published & Active"
+                                    description="Check this to make the post visible to readers immediately."
+                                    size="md"
+                                    color="blue"
+                                    {...form.getInputProps("status", { type: 'checkbox' })}
+                                />
+
+                                <Button
+                                    type="submit"
+                                    size="lg"
+                                    radius="md"
+                                    color="dark"
+                                    fullWidth
+                                    mt="md"
+                                >
+                                    Publish Now
+                                </Button>
+                            </Stack>
+                        </form>
+                    </Box>
+                </Paper>
+            </Container>
+        ) : isLoading ? (
           <div className="flex justify-center items-center py-20">
             <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600"></div>
           </div>
