@@ -18,6 +18,7 @@ import Backend from './backend'
 import AdminPanel from './AdminPanel'
 import BlogDetailPage from './BlogDetailPage'
 import Contact from './contact'
+import API from './api'
 
 
 function App() {
@@ -35,6 +36,13 @@ function App() {
     const [value, setValue] = useState(null) // null
     const [show, setShow] = useState(false) //bolean
     const [showName, setShowName] = useState(false) //bolean
+
+    useEffect(() => {
+    API.get("/")
+      .then((res) => console.log(res.data))
+      .catch((err) => console.log(err));
+  }, []);
+
 
 
 
@@ -63,6 +71,7 @@ function App() {
                     <Route path="/*" element={<div className="min-h-[60vh] flex items-center justify-center"><h1 className="text-4xl font-bold text-slate-800">Page not found</h1></div>} />
                 </Routes>
             </main>
+            <h1>React Frontend</h1>
 
             <Footer />
         </div>
