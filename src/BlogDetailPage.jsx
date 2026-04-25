@@ -1,6 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "./api/api";
 
 const BlogDetailPage = () => {
     const { id } = useParams();
@@ -10,7 +10,7 @@ const BlogDetailPage = () => {
     useEffect(() => {
         const fetchBlog = async () => {
             try {
-                const res = await axios.get(`http://localhost:8000/api/blogs`);
+                const res = await api.get(`/blogs`);
                 // Finding the specific blog since standard local APIs often return arrays
                 const foundBlog = res.data.find(b => b._id === id);
                 setBlog(foundBlog);

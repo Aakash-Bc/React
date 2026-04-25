@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import api from "./api/api";
 import { useNavigate } from "react-router-dom";
 import {
@@ -45,7 +44,7 @@ function Backend() {
   const handleFormSubmit = async (values) => {
       setFormIsLoading(true);
       try {
-          await axios.post("http://localhost:5000/api/create", values);
+          await api.post("/create", values);
           alert("✨ Blog added successfully!");
           form.reset();
           setIsAdding(false);
@@ -67,12 +66,12 @@ function Backend() {
     try {
       setIsLoading(true);
       setError(null);
-      const res = await axios.get("http://localhost:5000/api/blogs");
+      const res = await api.get("/blogs");
       // Only show active blogs
       setBlogs(res.data.filter(blog => blog.status === true));
     } catch (error) {
       console.error(error);
-      setError("Failed to connect to the backend server. Make sure your backend is running on http://localhost:8000.");
+      setError("Failed to connect to the backend server. Make sure your backend is running!");
     } finally {
       setIsLoading(false);
     }
