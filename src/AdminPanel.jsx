@@ -97,7 +97,7 @@ const AdminPanel = () => {
         setIsLoading(true);
         setError(null);
         try {
-            const res = await api.get("/");
+            const res = await api.get("blogs");
             setBlogs(Array.isArray(res.data) ? res.data : []);
         } catch (error) {
             console.error("Error fetching blogs:", error);
@@ -111,7 +111,7 @@ const AdminPanel = () => {
     const handleFormSubmit = async (values) => {
         setIsLoading(true);
         try {
-            await api.put(`/update/${editingId}`, values);
+            await api.put(`update/${editingId}`, values);
             alert("✏️ Blog updated successfully!");
             setEditingId(null);
             setActiveTab("manage");
@@ -128,7 +128,7 @@ const AdminPanel = () => {
     const deleteBlog = async (id) => {
         if (!window.confirm("Are you sure you want to delete this blog?")) return;
         try {
-            await api.delete(`/delete/${id}`);
+            await api.delete(`delete/${id}`);
             fetchBlogs();
         } catch (error) {
             console.error("Error deleting blog:", error);

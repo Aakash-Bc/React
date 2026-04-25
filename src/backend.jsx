@@ -44,7 +44,7 @@ function Backend() {
   const handleFormSubmit = async (values) => {
       setFormIsLoading(true);
       try {
-          await api.post("/create", values);
+          await api.post("create", values);
           alert("✨ Blog added successfully!");
           form.reset();
           setIsAdding(false);
@@ -66,7 +66,7 @@ function Backend() {
     try {
       setIsLoading(true);
       setError(null);
-      const res = await api.get("/blogs");
+      const res = await api.get("blogs");
       // Only show active blogs
       setBlogs(res.data.filter(blog => blog.status === true));
     } catch (error) {

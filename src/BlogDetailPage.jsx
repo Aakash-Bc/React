@@ -10,7 +10,7 @@ const BlogDetailPage = () => {
     useEffect(() => {
         const fetchBlog = async () => {
             try {
-                const res = await api.get(`/blogs`);
+                const res = await api.get(`blogs`);
                 // Finding the specific blog since standard local APIs often return arrays
                 const foundBlog = res.data.find(b => b._id === id);
                 setBlog(foundBlog);

@@ -16,11 +16,9 @@ const News = () => {
     const fetchNews = async (searchQuery = query) => {
         setLoading(true)
         try {
-            const apiKey = "68bdb3d4642e467db3702c03e1a1a53b"
-            const response = await fetch(`https://newsapi.org/v2/everything?q=${searchQuery}&pageSize=40&sortBy=publishedAt&apiKey=${apiKey}`)
-            const data = await response.json()
-            if (data.articles) {
-                const validArticles = data.articles.filter(a => a.title !== "[Removed]" && a.urlToImage)
+            const res = await api.get(`news?q=${searchQuery}`)
+            if (res.data.articles) {
+                const validArticles = res.data.articles.filter(a => a.title !== "[Removed]" && a.urlToImage)
                 setArticles(validArticles)
             }
         } catch (error) {
