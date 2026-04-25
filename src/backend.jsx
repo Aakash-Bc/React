@@ -67,11 +67,18 @@ function Backend() {
       setIsLoading(true);
       setError(null);
       const res = await api.get("blogs");
+      
+      // Defensive check: ensure res.data is an array
+      const blogData = Array.isArray(res.data) ? res.data : (res.data?.blogs || []);
+      
       // Only show active blogs
-      setBlogs(res.data.filter(blog => blog.status === true));
+      setBlogs(blogData.filter(blog => blog.status === true));
     } catch (error) {
-      console.error(error);
-      setError("Failed to connect to the backend server. Make sure your backend is running!");
+      console.error("Fetch error:", error);
+      const errorMessage = error.response 
+        ? `Server Error: ${error.response.status} - ${error.response.data?.message || error.message}`
+        : "Network Error: Could not reach the backend. Check CORS or your Internet connection.";
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
