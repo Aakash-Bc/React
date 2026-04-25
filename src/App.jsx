@@ -18,7 +18,7 @@ import Backend from './backend'
 import AdminPanel from './AdminPanel'
 import BlogDetailPage from './BlogDetailPage'
 import Contact from './contact'
-import API from './api'
+import API from './api/api'
 
 
 function App() {
