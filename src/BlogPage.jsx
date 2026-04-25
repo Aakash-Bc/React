@@ -101,7 +101,7 @@ const BlogPage = () => {
             </div>
 
             {/* Create Post Form */}
-            <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-2xl w-[400px] h-[400px] flex flex-col shrink-0 justify-center">
+            <div className="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-2xl w-full max-w-md min-h-[400px] flex flex-col shrink-0 justify-center">
                 <h2 className="text-xl font-black text-blue-600 mb-6 text-center uppercase tracking-widest underline decoration-blue-200 underline-offset-8">
                     Create Post
                 </h2>
@@ -122,7 +122,7 @@ const BlogPage = () => {
                         onChange={(e) => setDescription(e.target.value)}
                     />
 
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <input
                             type="text"
                             className="w-full px-4 py-3 text-sm rounded-xl border border-slate-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all"
@@ -161,6 +161,7 @@ const BlogPage = () => {
                     )}
                 </button>
             </div>
+
 
             {/* Blog Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full justify-items-center">

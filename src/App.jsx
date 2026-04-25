@@ -67,14 +67,13 @@ function App() {
                     <Route path='admin' element={<AdminPanel />} />
                     <Route path='blog/:id' element={<BlogDetailPage />} />
                     <Route path='contact' element={<Contact />} />
-
                     <Route path="/*" element={<div className="min-h-[60vh] flex items-center justify-center"><h1 className="text-4xl font-bold text-slate-800">Page not found</h1></div>} />
                 </Routes>
             </main>
-            <h1>React Frontend</h1>
-
             <Footer />
         </div>
+
+
     )
 }
 

@@ -59,19 +59,20 @@ const News = () => {
                         e.preventDefault();
                         navigate(`/news/${query}`);
                     }}
-                    className="flex gap-3"
+                    className="flex flex-col sm:flex-row gap-3 w-full md:w-auto"
                 >
                     <input
                         type="text"
                         placeholder="Search news..."
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
-                        className="border rounded-xl px-5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 w-64 transition-all"
+                        className="border rounded-xl px-5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 w-full md:w-64 transition-all"
                     />
-                    <Button type="submit" variant="primary" size="md" className="rounded-xl">
+                    <Button type="submit" variant="primary" size="md" className="rounded-xl w-full sm:w-auto">
                         Search
                     </Button>
                 </form>
+
             </div>
 
             {/* Category Filters */}

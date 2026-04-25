@@ -22,8 +22,10 @@ import {
     PasswordInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { useDisclosure } from "@mantine/hooks";
 
 const AdminPanel = () => {
+    const [opened, { toggle, close }] = useDisclosure(false);
     // Auth States
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoginView, setIsLoginView] = useState(true);
@@ -277,24 +279,37 @@ const AdminPanel = () => {
 
     // ─── FULL ADMIN PANEL ────────────────────────────────────────────────────────
     return (
-        <div className="min-h-screen bg-slate-50 flex">
-            {/* Sidebar */}
-            <aside className="w-64 bg-slate-900 text-white flex flex-col">
-                <div className="p-8">
+        <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
+            {/* Mobile Header */}
+            <div className="md:hidden bg-slate-900 text-white p-4 flex justify-between items-center sticky top-0 z-40">
+                <Title order={4} className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+                    ADMIN HUB
+                </Title>
+                <Burger opened={opened} onClick={toggle} color="white" size="sm" />
+            </div>
+
+            {/* Sidebar - Desktop & Mobile Drawer */}
+            <aside className={`
+                fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white flex flex-col transform transition-transform duration-300 ease-in-out
+                md:relative md:translate-x-0 
+                ${opened ? "translate-x-0" : "-translate-x-full"}
+            `}>
+                <div className="p-8 hidden md:block">
                     <Title order={3} className="tracking-tighter bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
                         ADMIN HUB
                     </Title>
                 </div>
 
-                <nav className="flex-1 px-4 space-y-2">
+                <nav className="flex-1 px-4 space-y-2 mt-4 md:mt-0">
                     <button
-                        onClick={() => { setActiveTab("manage"); setEditingId(null); form.reset(); }}
+                        onClick={() => { setActiveTab("manage"); setEditingId(null); form.reset(); setOpened(false); }}
                         className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                             activeTab === "manage" ? "bg-blue-600 text-white" : "text-slate-400 hover:bg-slate-800"
                         }`}
                     >
                         <span>📋</span> Manage Blogs
                     </button>
+                    {/* Add more nav items here */}
                 </nav>
 
                 <div className="p-4 border-t border-slate-800">
@@ -307,21 +322,24 @@ const AdminPanel = () => {
                 </div>
             </aside>
 
+            {/* Overlay for mobile sidebar */}
+            {opened && <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={toggle} />}
+
             {/* Main Content */}
-            <main className="flex-1 p-10 overflow-auto relative">
+            <main className="flex-1 p-4 md:p-10 overflow-x-hidden relative">
                 <LoadingOverlay visible={isLoading && activeTab === "manage"} zIndex={1000} overlayProps={{ blur: 2 }} />
 
-                <header className="mb-10 flex justify-between items-end">
+                <header className="mb-8 md:mb-10 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                     <div>
-                        <Title order={1} className="text-slate-800 font-black">
+                        <Title order={2} className="text-slate-800 font-black text-2xl md:text-3xl">
                             {activeTab === "manage" ? "Manage Content" : "Edit Post"}
                         </Title>
-                        <Text c="dimmed" mt="xs">
-                            Welcome back, Admin. Here's what's happening today.
+                        <Text c="dimmed" mt="xs" size="sm">
+                            Welcome back, Admin.
                         </Text>
                     </div>
                     {activeTab === "manage" && (
-                        <Badge size="xl" variant="light" color="blue" radius="md">
+                        <Badge size="lg" variant="light" color="blue" radius="md">
                             {blogs.length} Active Posts
                         </Badge>
                     )}
@@ -329,73 +347,76 @@ const AdminPanel = () => {
 
                 {activeTab === "manage" ? (
                     <Paper shadow="xs" radius="xl" withBorder p={0} className="overflow-hidden">
-                        <ScrollArea>
-                            <Table verticalSpacing="md" horizontalSpacing="xl">
-                                <Table.Thead className="bg-slate-50">
-                                    <Table.Tr>
-                                        <Table.Th className="text-slate-400 uppercase tracking-widest text-[10px]">Blog Info</Table.Th>
-                                        <Table.Th className="text-slate-400 uppercase tracking-widest text-[10px] text-center">Status</Table.Th>
-                                        <Table.Th className="text-slate-400 uppercase tracking-widest text-[10px] text-right">Actions</Table.Th>
-                                    </Table.Tr>
-                                </Table.Thead>
-                                <Table.Tbody>
-                                    {Array.isArray(blogs) && blogs.map((blog) => (
-                                        <Table.Tr key={blog._id} className="hover:bg-slate-50/50 transition-colors">
-                                            <Table.Td>
-                                                <Group gap="sm">
-                                                    <Image
-                                                        src={blog.img || "https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=200&auto=format&fit=crop"}
-                                                        w={64} h={64} radius="md"
-                                                        fallbackSrc="https://placehold.co/200x200?text=Blog"
-                                                    />
-                                                    <div>
-                                                        <Text size="sm" fw={700} className="text-slate-800 line-clamp-1">{blog.title}</Text>
-                                                        <Text size="xs" c="dimmed" className="line-clamp-1">{blog.description}</Text>
-                                                    </div>
-                                                </Group>
-                                            </Table.Td>
-                                            <Table.Td align="center">
-                                                <Badge color={blog.status ? "teal" : "gray"} variant="light" radius="sm" size="sm">
-                                                    {blog.status ? "Published" : "Draft"}
-                                                </Badge>
-                                            </Table.Td>
-                                            <Table.Td align="right">
-                                                <Group justify="flex-end" gap={8}>
-                                                    <ActionIcon variant="light" color="blue" size="lg" onClick={() => editBlog(blog)} radius="md">
-                                                        <span>✏️</span>
-                                                    </ActionIcon>
-                                                    <ActionIcon variant="light" color="red" size="lg" onClick={() => deleteBlog(blog._id)} radius="md">
-                                                        <span>🗑️</span>
-                                                    </ActionIcon>
-                                                </Group>
-                                            </Table.Td>
-                                        </Table.Tr>
-                                    ))}
-                                    {(!Array.isArray(blogs) || blogs.length === 0) && !isLoading && (
+                        <ScrollArea h={{ base: 500, md: 'auto' }}>
+                            <div className="min-w-[600px]"> {/* Ensure table doesn't squish too much */}
+                                <Table verticalSpacing="md" horizontalSpacing="xl">
+                                    <Table.Thead className="bg-slate-50">
                                         <Table.Tr>
-                                            <Table.Td colSpan={3} py={60} ta="center">
-                                                {error ? (
-                                                    <div className="flex flex-col items-center">
-                                                        <Text c="red" fw={700} mb={6}>⚠️ Connection Error</Text>
-                                                        <Text c="dimmed" fs="italic">{error}</Text>
-                                                    </div>
-                                                ) : (
-                                                    <Text c="dimmed" fs="italic">No blogs found.</Text>
-                                                )}
-                                            </Table.Td>
+                                            <Table.Th className="text-slate-400 uppercase tracking-widest text-[10px]">Blog Info</Table.Th>
+                                            <Table.Th className="text-slate-400 uppercase tracking-widest text-[10px] text-center">Status</Table.Th>
+                                            <Table.Th className="text-slate-400 uppercase tracking-widest text-[10px] text-right">Actions</Table.Th>
                                         </Table.Tr>
-                                    )}
-                                </Table.Tbody>
-                            </Table>
+                                    </Table.Thead>
+                                    <Table.Tbody>
+                                        {Array.isArray(blogs) && blogs.map((blog) => (
+                                            <Table.Tr key={blog._id} className="hover:bg-slate-50/50 transition-colors">
+                                                <Table.Td>
+                                                    <Group gap="sm" wrap="nowrap">
+                                                        <Image
+                                                            src={blog.img || "https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=200&auto=format&fit=crop"}
+                                                            w={48} h={48} radius="md"
+                                                            className="flex-shrink-0"
+                                                            fallbackSrc="https://placehold.co/200x200?text=Blog"
+                                                        />
+                                                        <div className="min-w-0">
+                                                            <Text size="sm" fw={700} className="text-slate-800 truncate">{blog.title}</Text>
+                                                            <Text size="xs" c="dimmed" className="truncate">{blog.description}</Text>
+                                                        </div>
+                                                    </Group>
+                                                </Table.Td>
+                                                <Table.Td align="center">
+                                                    <Badge color={blog.status ? "teal" : "gray"} variant="light" radius="sm" size="xs">
+                                                        {blog.status ? "Published" : "Draft"}
+                                                    </Badge>
+                                                </Table.Td>
+                                                <Table.Td align="right">
+                                                    <Group justify="flex-end" gap={4}>
+                                                        <ActionIcon variant="light" color="blue" size="md" onClick={() => editBlog(blog)} radius="md">
+                                                            <span>✏️</span>
+                                                        </ActionIcon>
+                                                        <ActionIcon variant="light" color="red" size="md" onClick={() => deleteBlog(blog._id)} radius="md">
+                                                            <span>🗑️</span>
+                                                        </ActionIcon>
+                                                    </Group>
+                                                </Table.Td>
+                                            </Table.Tr>
+                                        ))}
+                                        {(!Array.isArray(blogs) || blogs.length === 0) && !isLoading && (
+                                            <Table.Tr>
+                                                <Table.Td colSpan={3} py={60} ta="center">
+                                                    {error ? (
+                                                        <div className="flex flex-col items-center">
+                                                            <Text c="red" fw={700} mb={6}>⚠️ Connection Error</Text>
+                                                            <Text c="dimmed" fs="italic">{error}</Text>
+                                                        </div>
+                                                    ) : (
+                                                        <Text c="dimmed" fs="italic">No blogs found.</Text>
+                                                    )}
+                                                </Table.Td>
+                                            </Table.Tr>
+                                        )}
+                                    </Table.Tbody>
+                                </Table>
+                            </div>
                         </ScrollArea>
                     </Paper>
                 ) : (
                     <Container size="sm" p={0}>
-                        <Paper shadow="md" radius="xl" withBorder p={40}>
+                        <Paper shadow="md" radius="lg" md:radius="xl" withBorder p={{ base: 20, md: 40 }}>
                             <Box pos="relative">
                                 <LoadingOverlay visible={isLoading} zIndex={1000} overlayProps={{ blur: 1 }} />
                                 <Group justify="space-between" mb={30}>
-                                    <Title order={2} className="text-slate-800">Edit Post</Title>
+                                    <Title order={2} className="text-slate-800 text-xl md:text-2xl">Edit Post</Title>
                                     <Button variant="subtle" color="gray" size="xs" onClick={cancelEdit}>Cancel</Button>
                                 </Group>
                                 <form onSubmit={form.onSubmit(handleFormSubmit)}>
@@ -432,6 +453,7 @@ const AdminPanel = () => {
                 )}
             </main>
         </div>
+
     );
 };
 

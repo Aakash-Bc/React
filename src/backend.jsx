@@ -44,15 +44,18 @@ function Backend() {
   const handleFormSubmit = async (values) => {
       setFormIsLoading(true);
       try {
-          await api.post("create", values);
+          await api.post("blogs/create", values);
           alert("✨ Blog added successfully!");
+
           form.reset();
           setIsAdding(false);
           fetchBlogs();
       } catch (error) {
-          console.error(error);
-          alert("❌ Operation failed.");
+          console.error("Create Blog Error:", error);
+          const msg = error.response?.data?.message || error.message || "Operation failed.";
+          alert(`❌ ${msg}`);
       } finally {
+
           setFormIsLoading(false);
       }
   };
@@ -177,12 +180,13 @@ function Backend() {
             <p className="text-red-400 text-sm max-w-md mx-auto">{error}</p>
           </div>
         ) : (
-          <div className="grid md:grid-cols-3 gap-8">
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
             {blogs.map((blog) => (
               <div
                 key={blog._id}
                 onClick={() => navigate(`/blog/${blog._id}`)}
-                className="bg-white p-6 rounded-2xl border shadow-lg cursor-pointer h-[450px] hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 flex flex-col group"
+                className="bg-white p-6 rounded-2xl border shadow-lg cursor-pointer min-h-[400px] hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 flex flex-col group"
               >
                 <div className="overflow-hidden rounded-xl mb-4">
                   <img
@@ -210,6 +214,7 @@ function Backend() {
                 </div>
               </div>
             ))}
+
 
             {blogs.length === 0 && (
               <div className="col-span-3 text-center py-20 bg-slate-50 rounded-3xl border border-dashed border-slate-200">
