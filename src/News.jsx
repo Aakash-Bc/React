@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import Button from "./components/common/Button"
+import api from "./api/api"
 
 const News = () => {
     const { category } = useParams()

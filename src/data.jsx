@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import dataset from './components/common/data.json';
 
+
 const Data = () => {
   const [data, setData] = useState([]);
 
