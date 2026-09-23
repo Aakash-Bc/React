@@ -5,6 +5,12 @@ const TodoList = () => {
   // Store all todo items
   const [todos, setTodos] = useState([]);
 
+const appName = "My Todo App";
+const developer = "Aakash";
+const version = "1.0.0";
+const currentYear = new Date().getFullYear();
+const welcomeMessage = `Welcome to ${appName}`;
+
   // Store input value
   const [task, setTask] = useState("");
 
