@@ -13,7 +13,7 @@ import {
   Stack,
   LoadingOverlay,
   Divider,
-  Container
+  Container,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 
@@ -23,41 +23,57 @@ function Backend() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // View state for Add Blog Form
   const [isAdding, setIsAdding] = useState(false);
   const [formIsLoading, setFormIsLoading] = useState(false);
 
   // Mantine Form for Validation
   const form = useForm({
-      initialValues: {
-          title: "",
-          description: "",
-          status: true,
-      },
-      validate: {
-          title: (value) => (value.length < 5 ? "Title must have at least 5 characters" : null),
-          description: (value) => (value.length < 10 ? "Description must have at least 10 characters" : null),
-      },
+    initialValues: {
+      title: "",
+      description: "",
+      status: true,
+    },
+
+    validate: {
+      title: (value) =>
+        value.length < 5
+          ? "Title must have at least 5 characters"
+          : null,
+
+      description: (value) =>
+        value.length < 10
+          ? "Description must have at least 10 characters"
+          : null,
+    },
   });
 
+  // CREATE BLOG
   const handleFormSubmit = async (values) => {
-      setFormIsLoading(true);
-      try {
-          await api.post("blogs/create", values);
-          alert("✨ Blog added successfully!");
+    setFormIsLoading(true);
 
-          form.reset();
-          setIsAdding(false);
-          fetchBlogs();
-      } catch (error) {
-          console.error("Create Blog Error:", error);
-          const msg = error.response?.data?.message || error.message || "Operation failed.";
-          alert(`❌ ${msg}`);
-      } finally {
+    try {
+      await api.post("blogs/create", values);
 
-          setFormIsLoading(false);
-      }
+      alert("✨ Blog added successfully!");
+
+      form.reset();
+      setIsAdding(false);
+
+      fetchBlogs();
+    } catch (error) {
+      console.error("Create Blog Error:", error);
+
+      const msg =
+        error.response?.data?.message ||
+        error.message ||
+        "Operation failed.";
+
+      alert(`❌ ${msg}`);
+    } finally {
+      setFormIsLoading(false);
+    }
   };
 
   // GET BLOGS
@@ -69,18 +85,25 @@ function Backend() {
     try {
       setIsLoading(true);
       setError(null);
+
       const res = await api.get("blogs");
-      
+
       // Defensive check: ensure res.data is an array
-      const blogData = Array.isArray(res.data) ? res.data : (res.data?.blogs || []);
-      
+      const blogData = Array.isArray(res.data)
+        ? res.data
+        : res.data?.blogs || [];
+
       // Only show active blogs
-      setBlogs(blogData.filter(blog => blog.status === true));
+      setBlogs(blogData.filter((blog) => blog.status === true));
     } catch (error) {
       console.error("Fetch error:", error);
-      const errorMessage = error.response 
-        ? `Server Error: ${error.response.status} - ${error.response.data?.message || error.message}`
+
+      const errorMessage = error.response
+        ? `Server Error: ${error.response.status} - ${
+            error.response.data?.message || error.message
+          }`
         : "Network Error: Could not reach the backend. Check CORS or your Internet connection.";
+
       setError(errorMessage);
     } finally {
       setIsLoading(false);
@@ -89,98 +112,132 @@ function Backend() {
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-16 space-y-12 flex flex-col items-center min-h-[80vh]">
-
       {/* Header */}
       <div className="space-y-4 text-center w-full max-w-2xl mb-12 relative">
         <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">
           Backend <span className="text-blue-600">Blogs</span>
         </h1>
+
         <p className="text-slate-500 text-lg">
           Explore the latest stories and updates from our internal team.
         </p>
+
         {!isAdding && (
-            <Button mt="md" size="md" radius="xl" color="blue" variant="light" onClick={() => setIsAdding(true)}>
-                + Add New Blog
-            </Button>
+          <Button
+            mt="md"
+            size="md"
+            radius="xl"
+            color="blue"
+            variant="light"
+            onClick={() => setIsAdding(true)}
+          >
+            + Add New Blog
+          </Button>
         )}
       </div>
 
-      {/* Blog List - Grid View ONLY */}
+      {/* Blog List / Add Blog Form */}
       <div className="w-full max-w-6xl">
         {isAdding ? (
-            <Container size="sm" p={0} className="w-full">
-                <Paper shadow="2xl" radius="3xl" withBorder p={40}>
-                    <Box pos="relative">
-                        <LoadingOverlay visible={formIsLoading} zIndex={1000} overlayProps={{ blur: 1 }} />
+          <Container size="sm" p={0} className="w-full">
+            <Paper shadow="2xl" radius="3xl" withBorder p={40}>
+              <Box pos="relative">
+                <LoadingOverlay
+                  visible={formIsLoading}
+                  zIndex={1000}
+                  overlayProps={{ blur: 1 }}
+                />
 
-                        <Group justify="space-between" mb={30}>
-                            <Title order={2} className="text-slate-800">
-                                New Post
-                            </Title>
-                            <Button variant="subtle" color="gray" size="xs" onClick={() => setIsAdding(false)}>
-                                Cancel
-                            </Button>
-                        </Group>
+                <Group justify="space-between" mb={30}>
+                  <Title order={2} className="text-slate-800">
+                    New Post
+                  </Title>
 
-                        <form onSubmit={form.onSubmit(handleFormSubmit)}>
-                            <Stack gap="xl">
-                                <TextInput
-                                    label="Post Title"
-                                    placeholder="Enter a catchy headline"
-                                    size="md"
-                                    radius="md"
-                                    withAsterisk
-                                    {...form.getInputProps("title")}
-                                    classNames={{ input: "bg-slate-50 border-slate-100" }}
-                                />
+                  <Button
+                    variant="subtle"
+                    color="gray"
+                    size="xs"
+                    onClick={() => setIsAdding(false)}
+                  >
+                    Cancel
+                  </Button>
+                </Group>
 
-                                <Textarea
-                                    label="Description"
-                                    placeholder="Tell your story..."
-                                    size="md"
-                                    radius="md"
-                                    minRows={6}
-                                    withAsterisk
-                                    {...form.getInputProps("description")}
-                                    classNames={{ input: "bg-slate-50 border-slate-100" }}
-                                />
+                <form onSubmit={form.onSubmit(handleFormSubmit)}>
+                  <Stack gap="xl">
+                    <TextInput
+                      label="Post Title"
+                      placeholder="Enter a catchy headline"
+                      size="md"
+                      radius="md"
+                      withAsterisk
+                      {...form.getInputProps("title")}
+                      classNames={{
+                        input: "bg-slate-50 border-slate-100",
+                      }}
+                    />
 
-                                <Divider label="Publishing Options" labelPosition="center" />
+                    <Textarea
+                      label="Description"
+                      placeholder="Tell your story..."
+                      size="md"
+                      radius="md"
+                      minRows={6}
+                      withAsterisk
+                      {...form.getInputProps("description")}
+                      classNames={{
+                        input: "bg-slate-50 border-slate-100",
+                      }}
+                    />
 
-                                <Switch
-                                    label="Published & Active"
-                                    description="Check this to make the post visible to readers immediately."
-                                    size="md"
-                                    color="blue"
-                                    {...form.getInputProps("status", { type: 'checkbox' })}
-                                />
+                    <Divider
+                      label="Publishing Options"
+                      labelPosition="center"
+                    />
 
-                                <Button
-                                    type="submit"
-                                    size="lg"
-                                    radius="md"
-                                    color="dark"
-                                    fullWidth
-                                    mt="md"
-                                >
-                                    Publish Now
-                                </Button>
-                            </Stack>
-                        </form>
-                    </Box>
-                </Paper>
-            </Container>
+                    <Switch
+                      label="Published & Active"
+                      description="Check this to make the post visible to readers immediately."
+                      size="md"
+                      color="blue"
+                      {...form.getInputProps("status", {
+                        type: "checkbox",
+                      })}
+                    />
+
+                    <Button
+                      type="submit"
+                      size="lg"
+                      radius="md"
+                      color="dark"
+                      fullWidth
+                      mt="md"
+                    >
+                      Publish Now
+                    </Button>
+                  </Stack>
+                </form>
+              </Box>
+            </Paper>
+          </Container>
         ) : isLoading ? (
+          /* Loading State */
           <div className="flex justify-center items-center py-20">
             <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600"></div>
           </div>
         ) : error ? (
+          /* Error State */
           <div className="text-center py-20 bg-red-50 rounded-3xl border border-red-200">
-            <p className="text-red-500 font-extrabold text-xl mb-3">Connection Error</p>
-            <p className="text-red-400 text-sm max-w-md mx-auto">{error}</p>
+            <p className="text-red-500 font-extrabold text-xl mb-3">
+              Connection Error
+            </p>
+
+            <p className="text-red-400 text-sm max-w-md mx-auto">
+              {error}
+            </p>
           </div>
         ) : (
-        ) : (
+          /* Blog Grid */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
             {blogs.map((blog) => (
               <div
@@ -188,26 +245,31 @@ function Backend() {
                 onClick={() => navigate(`/blog/${blog._id}`)}
                 className="bg-white p-6 rounded-2xl border shadow-lg cursor-pointer min-h-[400px] hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 flex flex-col group"
               >
+                {/* Blog Image */}
                 <div className="overflow-hidden rounded-xl mb-4">
                   <img
                     src="https://media.istockphoto.com/id/814423752/photo/eye-of-model-with-colorful-art-make-up-close-up.jpg?s=612x612&w=0&k=20&c=l15OdMWjgCKycMMShP8UK94ELVlEGvt7GmB_esHWPYE="
-                    alt=""
+                    alt="Blog"
                     className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                 </div>
 
+                {/* Blog Title */}
                 <h3 className="text-xl font-bold text-slate-900 transition-all line-clamp-1 group-hover:text-blue-600">
                   {blog.title}
                 </h3>
 
+                {/* Blog Description */}
                 <p className="text-gray-600 mt-2 flex-1 line-clamp-4 leading-relaxed">
                   {blog.description}
                 </p>
 
+                {/* Blog Footer */}
                 <div className="flex justify-between items-center mt-6 pt-4 border-t border-slate-50">
                   <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                     Published Reader View
                   </span>
+
                   <span className="text-[10px] font-black uppercase tracking-widest text-blue-500 group-hover:mr-2 transition-all">
                     Read Full Story →
                   </span>
@@ -215,16 +277,17 @@ function Backend() {
               </div>
             ))}
 
-
+            {/* No Blogs */}
             {blogs.length === 0 && (
               <div className="col-span-3 text-center py-20 bg-slate-50 rounded-3xl border border-dashed border-slate-200">
-                <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Awaiting first system initialization</p>
+                <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">
+                  Awaiting first system initialization
+                </p>
               </div>
             )}
           </div>
         )}
       </div>
-
     </div>
   );
 }
