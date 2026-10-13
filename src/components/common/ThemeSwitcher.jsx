@@ -1,4 +1,4 @@
-```jsx
+
 import { useState, useEffect } from "react";
 
 function ThemeSwitcher() {
@@ -64,4 +64,3 @@ function ThemeSwitcher() {
 }
 
 export default ThemeSwitcher;
-```
